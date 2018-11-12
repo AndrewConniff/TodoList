@@ -5,6 +5,7 @@ Application Created in Visual Studio 2017 .NetCore 2.1
 ## Run 
 1. Clone the application into a folder on your machine
 1. Restore Nuget Packages
+1. Try the following step, if it fails run 'Add-Migration testMigration' then repeat the following step.
 1. In the Package Manager Console in Visual Studio 2017, run Update-Database to create the tables in the database
 
 ## Data
