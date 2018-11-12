@@ -13,8 +13,7 @@ namespace TodoList.Models
         public Guid Id { get; set; }
         [ForeignKey("TodoListForeignKey")]
         public Guid ListId { get; set; }
-        public string TaskTitle { get; set; }
-        public string Task { get; set; }
-        public bool  IsComplete { get; set; }
+        public string Name { get; set; }
+        public bool  Completed{ get; set; }
     }
 }

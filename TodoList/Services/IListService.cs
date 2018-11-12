@@ -12,5 +12,6 @@ namespace TodoList.Services
         Task<IEnumerable<TodoListDto>> GetTodoListsAsync(string sortString);
         Task<TodoTask> CompleteTask(Guid id, Guid taskId);
         Task CreateList(TodoListDto list);
+        Task AddTaskAsync(Guid id, TodoTask value);
     }
 }

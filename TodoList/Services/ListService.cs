@@ -33,7 +33,7 @@ namespace TodoList.Services
             IEnumerable<TodoListDto> castDto = new List<TodoListDto>();
             castDto = mappedDtos;
 
-            return castDto.OrderBy(i => i.Todos.Id);
+            return castDto.OrderBy(i => i.Id);
         }
 
         public async Task<TodoListDto> GetTodoListByIdAsync(Guid Id)
@@ -45,7 +45,9 @@ namespace TodoList.Services
         private async Task<TodoListDto> mapTodoDto(TodoListModel item)
         {
             TodoListDto mappedDto = new TodoListDto();
-            mappedDto.Todos = item;
+            mappedDto.Id = item.Id;
+            mappedDto.Name = item.Name;
+            mappedDto.Description = item.Description;
             mappedDto.Tasks = await _repository.getTasksByTodoIdAsync(item.Id);
             return mappedDto;
         }
@@ -72,13 +74,13 @@ namespace TodoList.Services
             var tasks = list.Tasks.Where(x => x.Id != null);
             TodoListModel newList = new TodoListModel
             {
-                Id = list.Todos.Id,
-                Name = list.Todos.Name,
-                Description = list.Todos.Description
+                Id = list.Id,
+                Name = list.Name,
+                Description = list.Description
             };
             foreach (var task in tasks)
             {
-                task.ListId = list.Todos.Id;
+                task.ListId = list.Id;
             }
             // create the list first so the foreign key is there.
             await _repository.AddLisAsynct(newList);
@@ -91,5 +93,10 @@ namespace TodoList.Services
             throw new NotImplementedException();
         }
 
+        public async Task AddTaskAsync(Guid id, TodoTask value)
+        {
+            value.ListId = id;
+            await _repository.AddTaskAsync(value);
+        }
     }
 }

@@ -20,6 +20,7 @@ namespace TodoList.Repositories
             var lists = _context.Set<TodoListModel>();
             await lists.AddAsync(list);
             _context.SaveChanges();
+
         }
 
         public async Task AddTaskAsync(IEnumerable<TodoTask> tasks)
@@ -29,10 +30,17 @@ namespace TodoList.Repositories
             _context.SaveChanges();
         }
 
+        public async Task AddTaskAsync(TodoTask value)
+        {
+            var loacalTask = _context.Set<TodoTask>();
+            await loacalTask.AddAsync(value);
+            _context.SaveChanges();
+        }
+
         public async Task ComleteTask(Guid id, Guid taskId)
         {
             var completedTask = await _context.Tasks.FirstOrDefaultAsync(x => x.ListId == id && x.Id == taskId);
-            completedTask.IsComplete = true;
+            completedTask.Completed = true;
             _context.Entry(completedTask).State = EntityState.Modified;
             await (_context.SaveChangesAsync());
         }

@@ -9,7 +9,9 @@ namespace TodoList.Models
     public class TodoListDto
     {
         [Required]
-        public TodoListModel Todos { get; set; }
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
         public List<TodoTask> Tasks { get; set; }
     }
 }

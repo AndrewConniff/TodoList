@@ -14,5 +14,6 @@ namespace TodoList.Repositories
         Task ComleteTask(Guid id, Guid taskId);
         Task AddTaskAsync(IEnumerable<TodoTask> tasks);
         Task<List<TodoTask>> getTasksByTodoIdAsync(Guid id);
+        Task AddTaskAsync(TodoTask value);
     }
 }

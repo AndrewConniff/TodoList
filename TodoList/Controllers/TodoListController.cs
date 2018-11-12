@@ -19,25 +19,25 @@ namespace TodoList.Controllers
         }
         // GET api/lists
         [HttpGet("lists")]
-        public  async Task<IActionResult> GetAll( string  searchString= "", int skip = 0, int limit = 0)
+        public async Task<IActionResult> GetAll(string searchString = "", int skip = 0, int limit = 0)
         {
             // TODO get all the lists by search parameter
             try
             {
                 var getlistsAsync = await _service.GetTodoListsAsync(searchString);
-                IOrderedQueryable<TodoListDto> castList = getlistsAsync.OrderBy(x => x.Todos.Id) as IOrderedQueryable<TodoListDto>;
                 if (limit < 1 || skip < 1)
                 {
-                    return Ok(castList);
+                    return Ok(getlistsAsync);
                 }
                 var page = skip / limit; // Example - skip = 30 limit = 10 means page 3
+
                 // PageList params: the list, the number of results per page, the page number.
-                var paninateTodos = PagingList.CreateAsync<TodoListDto>(castList, limit, page);
+                var paninateTodos = PagingList.Create(getlistsAsync.AsQueryable(), limit, page);
                 return Ok(paninateTodos);
             }
             catch
             {
-                return BadRequest("No lists found");
+                return NotFound();
             }
 
         }
@@ -46,7 +46,7 @@ namespace TodoList.Controllers
         [HttpGet("list/{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            if(id == null)
+            if (id == null)
             {
                 return BadRequest();
             }
@@ -59,13 +59,13 @@ namespace TodoList.Controllers
             }
             catch
             {
-                return BadRequest("Nothing found for that Id");
+                return NotFound();
             }
 
         }
 
         // POST api/lists
-        [HttpPost]
+        [HttpPost("lists")]
         public IActionResult CreateNewList([FromBody] TodoListDto value)
         {
             // Create new list
@@ -84,7 +84,7 @@ namespace TodoList.Controllers
                 return null;
             }
 
-            return CreatedAtAction("Get", new {id = value.Todos.Id}, value);
+            return CreatedAtAction("Get", new { id = value.Id }, value);
         }
         // POST api/lists
         [HttpPost("list/{id}/task/{taskId}/complete")]
@@ -98,10 +98,38 @@ namespace TodoList.Controllers
             }
             else
             {
-                return BadRequest();
+                return NotFound();
             }
         }
+        [HttpPost("list/{id}/tasks")]
+        public async Task<IActionResult> AddTask(Guid id, [FromBody] TodoTask value)
+        {
+            if (id == null)
+            {
+                return BadRequest();
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            // Add new task to  TODO list
+            try
+            {
+                await _service.AddTaskAsync(id, value);
+                var result = new CreatedAtActionResult("createdobjectresult", "statuscodeobjects", "", new { message = "201 Item Created", currentDate = DateTime.Now });
+                return result;
 
+            }
+            catch (Exception ex)
+            {
+                string text = ex.InnerException.ToString();
+                if (text.Contains("Violation of PRIMARY KEY constraint"))
+                {
+                    return StatusCode(409);
+                }
+                return BadRequest("Something went wrong " + ex.Message);
+            }
+        }
 
     }
 }
